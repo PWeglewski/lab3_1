@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.ClientData;
 import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.Id;
@@ -20,6 +21,8 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -64,5 +67,21 @@ public class BookKeeperTest {
 
         // then
         assertThat(invoice.getItems().size(), is(equalTo(1)));
+    }
+
+    @Test
+    public void shouldReturnInvoiceWithTwoItems() throws Exception{
+        // given
+        invoiceRequest.add(new RequestItem(productData, 1, money));
+        invoiceRequest.add(new RequestItem(productData, 1, money));
+        when(taxPolicy.calculateTax(any(ProductType.class), any(Money.class)))
+                .thenReturn(new Tax(new Money(new BigDecimal(0.65)), "The tax"));
+
+        // when
+        Invoice invoice = bookKeeper.issuance(invoiceRequest, taxPolicy);
+
+        // then
+        assertThat(invoice.getItems().size(), is(equalTo(2)));
+        verify(taxPolicy, times(2)).calculateTax(any(ProductType.class), any(Money.class));
     }
 }
