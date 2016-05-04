@@ -32,7 +32,7 @@ public class InvoiceRequestBuilder {
     }
 
     public InvoiceRequest build(){
-        final InvoiceRequest invoiceRequest = new InvoiceRequest(clientData);
+        InvoiceRequest invoiceRequest = new InvoiceRequest(clientData);
         items.stream().forEach(invoiceRequest::add);
         return invoiceRequest;
     }

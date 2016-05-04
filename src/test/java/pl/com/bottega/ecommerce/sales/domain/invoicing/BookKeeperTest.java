@@ -32,6 +32,8 @@ import static org.mockito.Mockito.when;
 public class BookKeeperTest {
     RequestItemBuilder requestItemBuilder = new RequestItemBuilder();
 
+    InvoiceRequestBuilder invoiceRequestBuilder = new InvoiceRequestBuilder();
+
     @Mock
     InvoiceFactory invoiceFactory;
 
@@ -49,10 +51,6 @@ public class BookKeeperTest {
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
-        money = new Money(new BigDecimal(23.65));
-        clientData = new ClientData(Id.generate(), "clientData");
-        productData = new ProductData(Id.generate(), new Money(new BigDecimal(50)), "NAME", ProductType.DRUG, new Date());
-        invoiceRequest = new InvoiceRequest(clientData);
         invoiceFactory = new InvoiceFactory();
         bookKeeper = new BookKeeper(invoiceFactory);
     }
@@ -60,7 +58,8 @@ public class BookKeeperTest {
     @Test
     public void shouldReturnInvoiceWithOneItem() throws Exception {
         // given
-        invoiceRequest.add(requestItemBuilder.build());
+        invoiceRequest = invoiceRequestBuilder.addItem(requestItemBuilder.build()).build();
+
         when(taxPolicy.calculateTax(any(ProductType.class), any(Money.class)))
                 .thenReturn(new Tax(new Money(new BigDecimal(0.65)), "The tax"));
 
@@ -74,8 +73,11 @@ public class BookKeeperTest {
     @Test
     public void shouldReturnInvoiceWithTwoItems() throws Exception{
         // given
-        invoiceRequest.add(requestItemBuilder.build());
-        invoiceRequest.add(requestItemBuilder.build());
+        invoiceRequest = invoiceRequestBuilder
+                .addItem(requestItemBuilder.build())
+                .addItem(requestItemBuilder.build())
+                .build();
+
         when(taxPolicy.calculateTax(any(ProductType.class), any(Money.class)))
                 .thenReturn(new Tax(new Money(new BigDecimal(0.65)), "The tax"));
 
