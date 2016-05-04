@@ -30,6 +30,8 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class BookKeeperTest {
+    RequestItemBuilder requestItemBuilder = new RequestItemBuilder();
+
     @Mock
     InvoiceFactory invoiceFactory;
 
@@ -58,7 +60,7 @@ public class BookKeeperTest {
     @Test
     public void shouldReturnInvoiceWithOneItem() throws Exception {
         // given
-        invoiceRequest.add(new RequestItem(productData, 1, money));
+        invoiceRequest.add(requestItemBuilder.build());
         when(taxPolicy.calculateTax(any(ProductType.class), any(Money.class)))
                 .thenReturn(new Tax(new Money(new BigDecimal(0.65)), "The tax"));
 
@@ -72,8 +74,8 @@ public class BookKeeperTest {
     @Test
     public void shouldReturnInvoiceWithTwoItems() throws Exception{
         // given
-        invoiceRequest.add(new RequestItem(productData, 1, money));
-        invoiceRequest.add(new RequestItem(productData, 1, money));
+        invoiceRequest.add(requestItemBuilder.build());
+        invoiceRequest.add(requestItemBuilder.build());
         when(taxPolicy.calculateTax(any(ProductType.class), any(Money.class)))
                 .thenReturn(new Tax(new Money(new BigDecimal(0.65)), "The tax"));
 
